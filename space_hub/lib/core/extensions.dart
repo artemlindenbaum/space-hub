@@ -9,7 +9,7 @@ extension ScreenUtills on BuildContext {
 }
 
 extension Deps on BuildContext {
-  Dependencies get get => InheritedDependencies.of(this);
+  Dependencies get get => Dependencies.of(this);
   Blocs get bloc => Blocs._(this);
 }
 

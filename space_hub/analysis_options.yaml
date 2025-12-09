@@ -2,7 +2,7 @@ include: package:flutter_lints/flutter.yaml
 
 analyzer:
   exclude:
-    - "lib/const/localization/**"
+    - "lib/core/localization/**"
     - "**/*.g.dart"
     - "**/*.freezed.dart"
     - "**/*.gen.dart"

@@ -74,6 +74,24 @@ class AppShell extends StatelessWidget {
             ),
           ),
         ),
+        GestureDetector(
+          onTap: () => goBranch(3),
+          child: Container(
+            color: Colors.transparent,
+            padding: const EdgeInsets.fromLTRB(24.5, 15.5, 24.5, 39.5),
+            child: SvgPicture.asset(
+              Assets.icons.svg.mainTruck.path,
+              package: 'ui_kit',
+              width: 18,
+              colorFilter: ColorFilter.mode(
+                navigationShell.currentIndex == 3
+                    ? context.style.primaryBrand
+                    : context.style.interactiveNormal.withValues(alpha: 0.2),
+                BlendMode.srcIn,
+              ),
+            ),
+          ),
+        ),
       ],
     ),
   );

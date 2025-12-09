@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart' show PlatformDispatcher;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:l/l.dart';
 import 'package:space_hub/app/app.dart';
 import 'package:space_hub/app/initialize_dependencies.dart';
@@ -15,7 +14,6 @@ Future<void> $initializeApp({
   // Defer the first frame until everything is initialized
   // and the app is ready to be displayed.
   final binding = WidgetsFlutterBinding.ensureInitialized()..deferFirstFrame();
-  FlutterNativeSplash.preserve(widgetsBinding: binding);
 
   try {
     // Handle errors that occur in the app

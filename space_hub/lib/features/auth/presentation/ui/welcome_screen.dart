@@ -2,12 +2,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:space_hub/app/dependencies.dart';
 import 'package:space_hub/core/extensions.dart';
+import 'package:space_hub/core/localization/generated/l10n.dart';
 import 'package:space_hub/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:space_hub/features/auth/presentation/bloc/auth_state.dart';
 import 'package:ui_kit/ui_kit.dart';
 
-class AuthScreen extends StatelessWidget {
-  const AuthScreen({super.key});
+class WelcomeScreen extends StatelessWidget {
+  const WelcomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -60,11 +61,11 @@ class AuthScreen extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          SpaceButton.primary(onPressed: () {}, text: 'Войти'),
+                          SpaceButton.primary(onPressed: () {}, text: S.of(context).enter),
                           const SizedBox(height: 20),
                           SpaceButton.secondary(
                             onPressed: () {},
-                            text: 'Зарегистрироваться',
+                            text: S.of(context).register,
                           ),
                         ],
                       ),

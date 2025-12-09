@@ -35,10 +35,9 @@ dependencies:
 
   # UI & Widgets
   flutter_svg: ^2.2.3
-  flutter_native_splash: ^2.4.6
   # assorted_layout_widgets: ^1.1.0
   # smooth_page_indicator: ^1.2.0+3
-  # shimmer: ^3.0.0
+  shimmer: ^3.0.0
   # cached_network_image: ^3.4.1
   # toastification: ^3.0.2
   # grouped_list: ^6.0.0
@@ -66,8 +65,9 @@ dependencies:
   # permission_handler: ^11.3.1
 
   # Internationalization
-  # intl_utils: ^2.8.7
-  # intl: ^0.20.2
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.2
 
   # Maps & Location
   # yandex_mapkit: ^0.15.0
@@ -83,7 +83,9 @@ dependencies:
   # flutter_chat_ui: ^1.6.6
 
   # Firebase & Notifications
-  # firebase_core: ^2.15.0
+  firebase_core: ^4.2.1
+  firebase_auth: ^6.1.2
+  cloud_firestore: ^6.1.0
   # firebase_messaging: ^14.6.7
   # flutter_local_notifications: ^14.0.0
 
@@ -92,15 +94,32 @@ dependencies:
   ui_kit:
   # uuid: ^3.0.7
 
-flutter:
-  uses-material-design: true
-  generate: true
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  intl_utils: ^2.8.13
   flutter_lints: ^6.0.0
   build_runner: ^2.10.4
   json_serializable: ^6.11.2
   freezed: ^3.2.3
   flutter_gen_runner: ^5.12.0
+
+flutter:
+  uses-material-design: true
+  generate: true
+
+  assets:
+    - assets/images/
+
+flutter_gen:
+  output: lib/const/assets_gen
+  line_length: 80
+  integrations:
+    flutter_svg: true
+
+flutter_intl:
+  enabled: true
+  class_name: S
+  main_locale: en
+  arb_dir: lib/core/localization
+  output_dir: lib/core/localization/generated
