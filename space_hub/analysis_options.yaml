@@ -1,4 +1,43 @@
 include: package:flutter_lints/flutter.yaml
 
+analyzer:
+  exclude:
+    - "lib/const/localization/**"
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    - "**/*.gen.dart"
+    - "**/*.gr.dart"
+    - "**/*.config.dart"
+
+
 linter:
   rules:
+    prefer_single_quotes: true
+    avoid_print: true
+    unnecessary_await_in_return: true
+    unnecessary_statements: true
+    always_declare_return_types: true
+    always_put_required_named_parameters_first: true
+    # package_api_docs: true
+    always_use_package_imports: true
+    avoid_void_async: true
+    sort_constructors_first: true
+    require_trailing_commas: false
+    avoid_escaping_inner_quotes: true
+    avoid_bool_literals_in_conditional_expressions: true
+    avoid_multiple_declarations_per_line: true
+    avoid_positional_boolean_parameters: true
+    avoid_redundant_argument_values: true
+    avoid_relative_lib_imports: true
+    directives_ordering: true
+    # discarded_futures: true
+    unawaited_futures: true
+    use_enums: true
+    use_raw_strings: true
+    use_string_buffers: true
+    prefer_const_constructors: true
+    prefer_const_constructors_in_immutables: true
+    prefer_const_declarations: true
+    prefer_const_literals_to_create_immutables: true
+    avoid_unnecessary_containers: true
+    exhaustive_cases: true
