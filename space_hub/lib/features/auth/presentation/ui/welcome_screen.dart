@@ -1,6 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:space_hub/app/dependencies.dart';
 import 'package:space_hub/core/extensions.dart';
 import 'package:space_hub/core/localization/generated/l10n.dart';
 import 'package:space_hub/features/auth/presentation/bloc/auth_bloc.dart';
@@ -13,7 +12,7 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => AuthBloc(Dependencies.of(context).dio),
+      create: (context) => AuthBloc(context.get.dio),
       child: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
           return SpaceScaffold(
@@ -61,7 +60,10 @@ class WelcomeScreen extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          SpaceButton.primary(onPressed: () {}, text: S.of(context).enter),
+                          SpaceButton.primary(
+                            onPressed: () {},
+                            text: S.of(context).enter,
+                          ),
                           const SizedBox(height: 20),
                           SpaceButton.secondary(
                             onPressed: () {},

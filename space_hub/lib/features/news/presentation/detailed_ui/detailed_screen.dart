@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:space_hub/app/dependencies.dart';
+import 'package:space_hub/core/extensions.dart';
 import 'package:space_hub/features/news/presentation/detailed_bloc/detailed_bloc.dart';
 import 'package:space_hub/features/news/presentation/detailed_bloc/detailed_state.dart';
 import 'package:ui_kit/ui_kit.dart';
@@ -11,7 +11,7 @@ class DetailedScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => DetailedBloc(id, Dependencies.of(context).dio),
+      create: (context) => DetailedBloc(id, context.get.dio),
       child: BlocBuilder<DetailedBloc, DetailedState>(
         builder: (context, state) {
           return SpaceScaffold(
