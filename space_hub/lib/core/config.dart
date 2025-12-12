@@ -2,7 +2,7 @@ import 'package:l/l.dart';
 
 /// Application configuration from compile-time environment variables
 /// Pass variables via: flutter run --dart-define-from-file=.env.dev
-abstract class AppConfig {
+abstract class Config {
   // Environment
   static const environment = String.fromEnvironment(
     'ENVIRONMENT',

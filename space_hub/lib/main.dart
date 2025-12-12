@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:l/l.dart';
-import 'package:space_hub/app/app_bloc_observer.dart';
+import 'package:space_hub/core/app_bloc_observer.dart';
 import 'package:space_hub/app/itinialization.dart';
-import 'package:space_hub/core/logger.dart';
+import 'package:space_hub/core/logger_settings.dart';
 
 void main() => l.capture<void>(
   () => runZonedGuarded<void>(
@@ -13,7 +13,7 @@ void main() => l.capture<void>(
 
       await $initializeApp(
         onProgress: (progress, message) {
-          l.i('[$progress] $message');
+          l.i('[step $progress] $message');
         },
         onSuccess: () {
           l.i('App initialized successfully');

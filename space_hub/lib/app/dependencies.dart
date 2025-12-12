@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:space_hub/core/config.dart';
+
 
 class Dependencies {
   Dependencies();
@@ -20,6 +22,10 @@ class Dependencies {
 
   @override
   String toString() => 'Dependencies{}';
+
+  static Future<Dependencies> init(
+    void Function(String progress, String message)? onProgress,
+  ) => _initializeDependencies(onProgress);
 }
 
 /// Fake Dependencies
@@ -68,4 +74,26 @@ class InheritedDependencies extends InheritedWidget {
 
   @override
   bool updateShouldNotify(covariant InheritedDependencies oldWidget) => false;
+}
+
+/// Initializes the app and returns a [Dependencies] object
+Future<Dependencies> _initializeDependencies(
+  void Function(String progress, String message)? onProgress,
+) async {
+  if (Config.configLogEnabled) {
+    Config.logConfig();
+  }
+
+  onProgress?.call('1', 'Initializing dependencies...');
+  final dependencies = Dependencies();
+
+  onProgress?.call('2', 'Loading shared preferences...');
+  dependencies.sharedPreferences = await SharedPreferences.getInstance();
+
+  onProgress?.call('3', 'Setting up API client...');
+  dependencies.dio = Dio(BaseOptions(baseUrl: Config.baseUrl));
+
+  onProgress?.call('4', 'dependencies initialized');
+
+  return dependencies;
 }

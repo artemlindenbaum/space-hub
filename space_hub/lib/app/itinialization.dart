@@ -1,10 +1,9 @@
 import 'package:flutter/foundation.dart' show PlatformDispatcher;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:l/l.dart';
 import 'package:space_hub/app/app.dart';
-import 'package:space_hub/app/initialize_dependencies.dart';
+import 'package:space_hub/app/dependencies.dart';
 
 Future<void> $initializeApp({
   void Function(String progress, String message)? onProgress,
@@ -24,61 +23,48 @@ Future<void> $initializeApp({
     };
 
     // Initialize application step by step
-    final dependencies = await $initializeDependencies(onProgress: onProgress);
+    final dependencies = await Dependencies.init(onProgress);
 
-    Future<void> appRunner() async {
-      // Allow the first frame to be displayed after the app is initialized.
-      SchedulerBinding.instance.addPostFrameCallback((_) {
-        binding.allowFirstFrame();
-        onSuccess?.call();
-      });
-
-      runApp(dependencies.inject(child: const App()));
-    }
-
-    await appRunner();
+    binding.allowFirstFrame();
+    
+    runApp(dependencies.inject(child: const App()));
   } on Object catch (error, stackTrace) {
     onError?.call(error, stackTrace);
     binding.allowFirstFrame();
-    runApp($AppError(error: error, stackTrace: stackTrace));
+
+    runApp(_AppError(error: error, stackTrace: stackTrace));
   }
 }
 
-class $AppError extends StatelessWidget {
-  const $AppError({required this.error, required this.stackTrace, super.key});
+class _AppError extends StatelessWidget {
+  const _AppError({required this.error, required this.stackTrace});
   final Object error;
   final StackTrace stackTrace;
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(title: const Text('Initialization Error')),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'An error occurred during app initialization:',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  error.toString(),
-                  style: const TextStyle(color: Colors.red),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  stackTrace.toString(),
-                  style: const TextStyle(fontFamily: 'monospace'),
-                ),
-              ],
-            ),
+  Widget build(BuildContext context) => MaterialApp(
+    home: Scaffold(
+      appBar: AppBar(title: const Text('Initialization Error')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 16,
+            children: [
+              const Text(
+                'An error occurred during app initialization:',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              Text(error.toString(), style: const TextStyle(color: Colors.red)),
+              Text(
+                stackTrace.toString(),
+                style: const TextStyle(fontFamily: 'monospace'),
+              ),
+            ],
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
 }
