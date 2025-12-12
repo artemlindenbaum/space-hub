@@ -1,0 +1,125 @@
+name: space_hub
+description: "A new Flutter project."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.1
+
+workspace:
+  - packages/ui_kit
+  - packages/ui_kit/example
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Routing
+  go_router: ^17.0.0
+
+  # Networking
+  dio: ^5.9.0
+  # retrofit: ^3.0.1
+  # pretty_dio_logger: ^1.2.0
+
+  # State Management
+  flutter_bloc: ^9.1.1
+  bloc: ^9.1.0
+  equatable: ^2.0.7
+  bloc_concurrency: ^0.3.0
+  stream_transform: ^2.1.1
+
+  # Code Generation / Serialization
+  json_annotation: ^4.9.0
+  freezed_annotation: ^3.1.0
+
+  # UI & Widgets
+  flutter_svg: ^2.2.3
+  # assorted_layout_widgets: ^1.1.0
+  # smooth_page_indicator: ^1.2.0+3
+  shimmer: ^3.0.0
+  # cached_network_image: ^3.4.1
+  # toastification: ^3.0.2
+  # grouped_list: ^6.0.0
+
+  # Text & Input
+  # mask_text_input_formatter: ^2.9.0
+
+  # Device / Platform
+  # url_launcher: ^6.3.2
+  # package_info_plus: ^4.0.4
+
+  # Storage & Files
+  shared_preferences: ^2.5.3
+  # path_provider: ^2.1.5
+  # path: ^1.9.0
+
+  # Media
+  # image_picker: ^1.1.2
+
+  # Connectivity & Network Status
+  # connectivity_plus: ^6.1.0
+  # queue: ^5.0.0
+
+  # Permissions
+  # permission_handler: ^11.3.1
+
+  # Internationalization
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.2
+
+  # Maps & Location
+  # yandex_mapkit: ^0.15.0
+  # geolocator: ^9.0.2
+  # location: ^4.4.0
+  # geocoding: ^2.0.5
+
+  # Background & Scheduling
+  # workmanager: ^0.5.0
+  # flutter_background: ^1.2.3
+
+  # Chat & Messaging UI
+  # flutter_chat_ui: ^1.6.6
+
+  # Firebase & Notifications
+  firebase_core: ^4.2.1
+  firebase_auth: ^6.1.2
+  cloud_firestore: ^6.1.0
+  # firebase_messaging: ^14.6.7
+  # flutter_local_notifications: ^14.0.0
+
+  # Utilities
+  l: ^5.0.1
+  ui_kit:
+  # uuid: ^3.0.7
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  intl_utils: ^2.8.13
+  flutter_lints: ^6.0.0
+  build_runner: ^2.10.4
+  json_serializable: ^6.11.2
+  freezed: ^3.2.3
+  flutter_gen_runner: ^5.12.0
+
+flutter:
+  uses-material-design: true
+  generate: true
+
+  assets:
+    - assets/images/
+
+flutter_gen:
+  output: lib/const/assets_gen
+  line_length: 80
+  integrations:
+    flutter_svg: true
+
+flutter_intl:
+  enabled: true
+  class_name: S
+  main_locale: en
+  arb_dir: lib/core/localization
+  output_dir: lib/core/localization/generated

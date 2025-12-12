@@ -1,0 +1,9 @@
+targets:
+  $default:
+    builders:
+      freezed:freezed:
+        options:
+          enable_cached_builds: true
+      flutter_gen_runner:flutter_gen_runner:
+        options:
+          enable_cached_builds: true
