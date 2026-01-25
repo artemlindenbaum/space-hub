@@ -1,4 +1,5 @@
-import 'package:ui_kit/ui_kit.dart';
+import 'package:flutter/widgets.dart';
+import 'package:space_hub/shared/ui/space_scaffold.dart';
 
 class RegistrationScreen extends StatelessWidget {
   const RegistrationScreen({super.key});

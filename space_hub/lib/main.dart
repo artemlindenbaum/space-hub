@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:l/l.dart';
-import 'package:space_hub/core/app_bloc_observer.dart';
 import 'package:space_hub/app/itinialization.dart';
+import 'package:space_hub/core/app_bloc_observer.dart';
 import 'package:space_hub/core/logger_settings.dart';
 
 void main() => l.capture<void>(

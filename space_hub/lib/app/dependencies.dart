@@ -1,8 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:space_hub/core/config.dart';
-
+import 'package:space_hub/core/const/storage_keys.dart';
+import 'package:space_hub/core/interceptors/token_interceptor.dart';
+import 'package:space_hub/core/services/session_service/data/session_api.dart';
+import 'package:space_hub/core/services/session_service/domain/session_repository.dart';
+import 'package:space_hub/core/services/session_service/notifier/session_service.dart';
+import 'package:space_hub/core/services/token_service.dart';
 
 class Dependencies {
   Dependencies();
@@ -18,7 +24,13 @@ class Dependencies {
   // Shared preferences
   late final SharedPreferences sharedPreferences;
 
-  late final Dio dio;
+  late final FlutterSecureStorage secureStorage;
+
+  late final Dio apiClient;
+
+  late final TokenService tokenService;
+
+  late final SessionNotifier sessionService;
 
   @override
   String toString() => 'Dependencies{}';
@@ -87,13 +99,50 @@ Future<Dependencies> _initializeDependencies(
   onProgress?.call('1', 'Initializing dependencies...');
   final dependencies = Dependencies();
 
-  onProgress?.call('2', 'Loading shared preferences...');
+  onProgress?.call('2', 'Loading storage preferences...');
   dependencies.sharedPreferences = await SharedPreferences.getInstance();
+  dependencies.secureStorage = const FlutterSecureStorage();
+  // await dependencies.sharedPreferences.clear();
+  // await dependencies.secureStorage.deleteAll();
 
   onProgress?.call('3', 'Setting up API client...');
-  dependencies.dio = Dio(BaseOptions(baseUrl: Config.baseUrl));
+  dependencies.apiClient = Dio(BaseOptions(baseUrl: Config.baseUrl));
 
-  onProgress?.call('4', 'dependencies initialized');
+  onProgress?.call('5', 'Setting up TokenService...');
+  final sessionMode =
+      dependencies.sharedPreferences.getBool(StorageKeys.rememberMe) == true
+      ? SessionMode.persistent
+      : SessionMode.temporary;
+
+  dependencies.tokenService = TokenService(
+    dependencies.secureStorage,
+    sessionMode,
+  );
+  await dependencies.tokenService.init();
+
+  onProgress?.call('6', 'Setting up SessionNotifier...');
+
+  dependencies.sessionService = SessionNotifier(
+    SessionRepository(
+      SessionApi(dependencies.apiClient),
+      dependencies.tokenService,
+    ),
+  );
+
+  onProgress?.call('7', 'adding interceptors...');
+  dependencies.apiClient.interceptors.addAll([
+    TokenInterceptor(
+      dependencies.tokenService,
+      dependencies.sessionService,
+      dependencies.apiClient,
+    ),
+  ]);
+
+  onProgress?.call('8', 'initializing session...');
+
+  await dependencies.sessionService.initializeSession();
+
+  onProgress?.call('9', 'dependencies initialized');
 
   return dependencies;
 }

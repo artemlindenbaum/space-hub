@@ -1,11 +1,16 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:space_hub/core/async_status.dart';
 
 part 'dashboard_state.freezed.dart';
 
+enum DashboardEffect { none }
+
+enum DashboardError { unknown }
+
 @freezed
-class DashboardState with _$DashboardState {
-  const factory DashboardState.initial() = _Initial;
-  const factory DashboardState.loading() = _Loading;
-  const factory DashboardState.loaded() = _Loaded;
-  const factory DashboardState.error(String message) = _Error;
+abstract class DashboardState with _$DashboardState {
+  const factory DashboardState({
+    @Default(AsyncIdle())
+    AsyncStatus<DashboardError, DashboardEffect> asyncStatus,
+  }) = _DashboardState;
 }

@@ -1,7 +1,5 @@
-import 'package:flutter/foundation.dart' show PlatformDispatcher;
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:l/l.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:space_hub/app/app.dart';
 import 'package:space_hub/app/dependencies.dart';
 
@@ -10,29 +8,22 @@ Future<void> $initializeApp({
   void Function(/* Dependencies dependencies */)? onSuccess,
   void Function(Object error, StackTrace stackTrace)? onError,
 }) async {
-  // Defer the first frame until everything is initialized
-  // and the app is ready to be displayed.
-  final binding = WidgetsFlutterBinding.ensureInitialized()..deferFirstFrame();
+  // сохраняем сплэшскрин до окончания инициализации
+  final binding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: binding);
 
   try {
-    // Handle errors that occur in the app
-    // and send them as breadcrumbs to Sentry.
-    PlatformDispatcher.instance.onError = (error, stackTrace) {
-      l.e('Top level error: $error', stackTrace);
-      return true;
-    };
-
     // Initialize application step by step
     final dependencies = await Dependencies.init(onProgress);
 
-    binding.allowFirstFrame();
-    
-    runApp(dependencies.inject(child: const App()));
-  } on Object catch (error, stackTrace) {
-    onError?.call(error, stackTrace);
-    binding.allowFirstFrame();
+    FlutterNativeSplash.remove();
 
-    runApp(_AppError(error: error, stackTrace: stackTrace));
+    runApp(dependencies.inject(child: const App()));
+  } on Object catch (error, st) {
+    onError?.call(error, st);
+    FlutterNativeSplash.remove();
+
+    runApp(_AppError(error: error, stackTrace: st));
   }
 }
 

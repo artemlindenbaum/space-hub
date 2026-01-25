@@ -1,5 +1,8 @@
+import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:space_hub/app/app_shell.dart';
+import 'package:space_hub/core/services/session_service/notifier/session_service.dart';
+import 'package:space_hub/core/theme/extensions.dart';
 import 'package:space_hub/features/auth/presentation/ui/login_screen.dart';
 import 'package:space_hub/features/auth/presentation/ui/registration_screen.dart';
 import 'package:space_hub/features/auth/presentation/ui/welcome_screen.dart';
@@ -8,7 +11,6 @@ import 'package:space_hub/features/news/presentation/detailed_ui/detailed_screen
 import 'package:space_hub/features/news/presentation/feed_ui/feed_screen.dart';
 import 'package:space_hub/features/news/presentation/search_ui/search_screen.dart';
 import 'package:space_hub/features/profile/presentation/ui/profile_screen.dart';
-import 'package:ui_kit/ui_kit.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _dashboardNavigatorKey = GlobalKey<NavigatorState>(
@@ -18,105 +20,136 @@ final _feedNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'feed');
 final _searchNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'search');
 final _profileNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'profile');
 
-enum Routes {
-  welcome('/welcome'),
-  registration('/registration'),
-  auth('/auth'),
+abstract final class Seg {
+  static const welcome = 'welcome';
+  static const registration = 'registration';
+  static const auth = 'auth';
 
-  dashboard('/dashboard'),
-  feed('/feed'),
-  search('/search'),
-  profile('/profile'),
+  static const dashboard = 'dashboard';
+  static const feed = 'feed';
+  static const search = 'search';
+  static const profile = 'profile';
 
-  detailed('/detailed');
-
-  const Routes(this.path);
-
-  final String path;
+  static const detailed = 'detailed';
 }
 
-final router = GoRouter(
-  initialLocation: Routes.welcome.path,
-  navigatorKey: _rootNavigatorKey,
-  routes: [
-    fadeTransitionRoute(
-      path: Routes.welcome.path,
-      builder: (context, state) => const WelcomeScreen(),
-      routes: [
-        fadeTransitionRoute(
-          path: Routes.registration.path,
-          builder: (context, state) => const RegistrationScreen(),
-        ),
-        fadeTransitionRoute(
-          path: Routes.auth.path,
-          builder: (context, state) => const LoginScreen(),
-        ),
-      ],
-    ),
-    StatefulShellRoute.indexedStack(
-      builder: (context, state, navigationShell) =>
-          AppShell(navigationShell: navigationShell), //Scaffold
-      branches: [
-        StatefulShellBranch(
-          navigatorKey: _dashboardNavigatorKey,
-          routes: [
-            fadeTransitionRoute(
-              path: Routes.dashboard.path,
-              builder: (context, state) => const DashboardScreen(),
-            ),
-          ],
-        ),
-        StatefulShellBranch(
-          navigatorKey: _feedNavigatorKey,
-          routes: [
-            fadeTransitionRoute(
-              path: Routes.feed.path,
-              builder: (context, state) => FeedScreen(
-                onNewsTap: (id) => context.push('${Routes.detailed.path}/$id'),
-              ),
-            ),
-          ],
-        ),
-        StatefulShellBranch(
-          navigatorKey: _searchNavigatorKey,
-          routes: [
-            fadeTransitionRoute(
-              path: Routes.search.path,
-              builder: (context, state) => SearchScreen(
-                onNewsTap: (id) => context.push('${Routes.detailed.path}/$id'),
-              ),
-            ),
-          ],
-        ),
-        StatefulShellBranch(
-          navigatorKey: _profileNavigatorKey,
-          routes: [
-            fadeTransitionRoute(
-              path: Routes.profile.path,
-              builder: (context, state) => const ProfileScreen(),
-            ),
-          ],
-        ),
-      ],
-    ),
-    fadeTransitionRoute(
-      path: '${Routes.detailed.path}/:id', // /detailed/:id
-      builder: (context, state) {
-        final id = state.pathParameters['id']!;
+enum Routes {
+  welcome,
+  registration,
+  auth,
 
-        return DetailedScreen(id: id);
-      },
-    ),
-  ],
-);
+  dashboard,
+  feed,
+  search,
+  profile,
+
+  detailed,
+}
+
+class AppRouter {
+  AppRouter(SessionNotifier sessionService)
+    : router = _createRouter(sessionService);
+
+  final GoRouter router;
+
+  static GoRouter _createRouter(SessionNotifier sessionService) => GoRouter(
+    initialLocation: '/${Seg.welcome}',
+    refreshListenable: sessionService,
+    redirect: (context, state) {
+      return null;
+    },
+    navigatorKey: _rootNavigatorKey,
+    routes: [
+      fadeTransitionRoute(
+        name: Routes.welcome.name,
+        path: '/${Seg.welcome}',
+        builder: (context, state) => const WelcomeScreen(),
+        routes: [
+          fadeTransitionRoute(
+            name: Routes.registration.name,
+            path: Seg.registration,
+            builder: (context, state) => const RegistrationScreen(),
+          ),
+          fadeTransitionRoute(
+            name: Routes.auth.name,
+            path: Seg.auth,
+            builder: (context, state) => const LoginScreen(),
+          ),
+        ],
+      ),
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) =>
+            AppShell(navigationShell: navigationShell), //Scaffold
+        branches: [
+          StatefulShellBranch(
+            navigatorKey: _dashboardNavigatorKey,
+            routes: [
+              fadeTransitionRoute(
+                name: Routes.dashboard.name,
+                path: '/${Seg.dashboard}',
+                builder: (context, state) => const DashboardScreen(),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            navigatorKey: _feedNavigatorKey,
+            routes: [
+              fadeTransitionRoute(
+                name: Routes.feed.name,
+                path: '/${Seg.feed}',
+                builder: (context, state) => FeedScreen(
+                  onNewsTap: (id) =>
+                      context.pushNamed('${Routes.detailed.name}/$id'),
+                ),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            navigatorKey: _searchNavigatorKey,
+            routes: [
+              fadeTransitionRoute(
+                name: Routes.search.name,
+                path: '/${Seg.search}',
+                builder: (context, state) => SearchScreen(
+                  onNewsTap: (id) =>
+                      context.pushNamed('${Routes.detailed.name}/$id'),
+                ),
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            navigatorKey: _profileNavigatorKey,
+            routes: [
+              fadeTransitionRoute(
+                name: Routes.profile.name,
+                path: '/${Seg.profile}',
+                builder: (context, state) => const ProfileScreen(),
+              ),
+            ],
+          ),
+        ],
+      ),
+      fadeTransitionRoute(
+        name: Routes.detailed.name,
+        path: '/${Seg.detailed}/:id', // /detailed/:id
+        builder: (context, state) {
+          final id = state.pathParameters['id'];
+          return DetailedScreen(id);
+        },
+      ),
+    ],
+  );
+}
 
 GoRoute fadeTransitionRoute({
   required String path,
+  required String name,
   required Widget Function(BuildContext, GoRouterState) builder,
   List<GoRoute> routes = const [],
 }) {
   return GoRoute(
     path: path,
+    name: name,
     pageBuilder: (context, state) => CustomTransitionPage(
       key: state.pageKey,
       child: builder(context, state),

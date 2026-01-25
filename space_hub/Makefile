@@ -2,7 +2,7 @@ get:
 	fvm flutter pub get --no-example
 
 gen:
-	fvm dart run build_runner build --delete-conflicting-outputs && cd packages/ui_kit && fvm dart run build_runner build --delete-conflicting-outputs
+	fvm dart run build_runner build --delete-conflicting-outputs
 
 clean:
 	flutter clean

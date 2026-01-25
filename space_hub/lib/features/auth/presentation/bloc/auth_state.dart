@@ -1,12 +1,15 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:space_hub/core/async_status.dart';
 
 part 'auth_state.freezed.dart';
 
+enum AuthEffect { none }
+
+enum AuthError { unknown }
+
 @freezed
-class AuthState with _$AuthState {
-  const factory AuthState.initial() = _Initial;
-  const factory AuthState.loading() = _Loading;
-  const factory AuthState.authenticated() = _Authenticated;
-  const factory AuthState.unauthenticated() = _Unauthenticated;
-  const factory AuthState.error(String message) = _Error;
+abstract class AuthState with _$AuthState {
+  const factory AuthState({
+    @Default(AsyncIdle()) AsyncStatus<AuthError, AuthEffect> asyncStatus,
+  }) = _AuthState;
 }

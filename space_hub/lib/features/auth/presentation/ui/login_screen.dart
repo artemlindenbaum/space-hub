@@ -1,4 +1,5 @@
-import 'package:ui_kit/ui_kit.dart';
+import 'package:flutter/widgets.dart';
+import 'package:space_hub/shared/ui/space_scaffold.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});

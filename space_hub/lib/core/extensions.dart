@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:space_hub/app/dependencies.dart';
-import 'package:space_hub/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:space_hub/features/auth/presentation/bloc/auth_cubit.dart';
+import 'package:space_hub/features/dashboard/presentation/bloc/dashboard_cubit.dart';
+import 'package:space_hub/features/news/presentation/bloc/news_cubit.dart';
+import 'package:space_hub/features/profile/presentation/bloc/profile_bloc.dart';
 
 extension ScreenUtills on BuildContext {
   double get sw => MediaQuery.of(this).size.width;
@@ -9,7 +12,7 @@ extension ScreenUtills on BuildContext {
 }
 
 extension Deps on BuildContext {
-  Dependencies get get => Dependencies.of(this);
+  Dependencies get get => InheritedDependencies.of(this);
   Blocs get bloc => Blocs._(this);
 }
 
@@ -18,5 +21,8 @@ class Blocs {
 
   final BuildContext _context;
 
-  AuthBloc get authBloc => _context.read<AuthBloc>();
+  ProfileCubit get profileCubit => _context.read<ProfileCubit>();
+  NewsCubit get newsCubit => _context.read<NewsCubit>();
+  AuthCubit get authCubit => _context.read<AuthCubit>();
+  DashboardCubit get dashboardCubit => _context.read<DashboardCubit>();
 }

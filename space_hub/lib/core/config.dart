@@ -4,15 +4,12 @@ import 'package:l/l.dart';
 /// Pass variables via: flutter run --dart-define-from-file=.env.dev
 abstract class Config {
   // Environment
-  static const environment = String.fromEnvironment(
-    'ENVIRONMENT',
-    defaultValue: 'dev',
-  );
+  static const env = String.fromEnvironment('ENVIRONMENT', defaultValue: 'dev');
 
   // API Configuration
   static const baseUrl = String.fromEnvironment(
     'BASE_URL',
-    defaultValue: 'https://dev-api.example.com',
+    defaultValue: 'http://api-dev.truxway.ru/api/',
   );
 
   static const configLogEnabled = bool.fromEnvironment(
@@ -27,8 +24,8 @@ abstract class Config {
   );
 
   // Helpers
-  static bool get isDev => environment == 'dev';
-  static bool get isProd => environment == 'prod';
+  static bool get isDev => env == 'dev';
+  // static bool get isProd => env == 'prod';
 
   // Print config (for debugging)
   static void logConfig() {
@@ -37,7 +34,7 @@ abstract class Config {
 ╔════════════════════════════════════════╗
 ║         App Configuration              ║
 ╠════════════════════════════════════════╣
-║ Environment: $environment
+║ Environment: $env
 ║ Base URL: $baseUrl
 ║ Log Config Enabled: $configLogEnabled
 ║ Some Feature Flag: $someFeatureFlag

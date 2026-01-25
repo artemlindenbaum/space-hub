@@ -6,10 +6,6 @@ version: 1.0.0+1
 environment:
   sdk: ^3.10.1
 
-workspace:
-  - packages/ui_kit
-  - packages/ui_kit/example
-
 dependencies:
   flutter:
     sdk: flutter
@@ -38,6 +34,7 @@ dependencies:
   # assorted_layout_widgets: ^1.1.0
   # smooth_page_indicator: ^1.2.0+3
   shimmer: ^3.0.0
+  l: ^5.0.1
   # cached_network_image: ^3.4.1
   # toastification: ^3.0.2
   # grouped_list: ^6.0.0
@@ -51,6 +48,9 @@ dependencies:
 
   # Storage & Files
   shared_preferences: ^2.5.3
+  flutter_secure_storage: ^10.0.0
+
+  flutter_native_splash: ^2.4.6
   # path_provider: ^2.1.5
   # path: ^1.9.0
 
@@ -90,8 +90,6 @@ dependencies:
   # flutter_local_notifications: ^14.0.0
 
   # Utilities
-  l: ^5.0.1
-  ui_kit:
   # uuid: ^3.0.7
 
 dev_dependencies:
@@ -110,6 +108,21 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/icons/svg/
+
+  fonts:
+  - family: WixMadeforDisplay
+    fonts:
+      - asset: assets/fonts/WixMadeforDisplay-ExtraBold.ttf
+        weight: 800
+      - asset: assets/fonts/WixMadeforDisplay-Bold.ttf
+        weight: 700
+      - asset: assets/fonts/WixMadeforDisplay-SemiBold.ttf
+        weight: 600
+      - asset: assets/fonts/WixMadeforDisplay-Medium.ttf
+        weight: 500
+      - asset: assets/fonts/WixMadeforDisplay-Regular.ttf
+        weight: 400
 
 flutter_gen:
   output: lib/const/assets_gen
