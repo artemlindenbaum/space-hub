@@ -47,17 +47,17 @@ enum Routes {
 }
 
 class AppRouter {
-  AppRouter(SessionNotifier sessionService)
+  AppRouter(SessionService sessionService)
     : router = _createRouter(sessionService);
 
   final GoRouter router;
 
-  static GoRouter _createRouter(SessionNotifier sessionService) => GoRouter(
+  static GoRouter _createRouter(SessionService sessionService) => GoRouter(
     initialLocation: '/${Seg.welcome}',
     refreshListenable: sessionService,
-    redirect: (context, state) {
-      return null;
-    },
+    // redirect: (context, state) {
+    //   return null;
+    // },
     navigatorKey: _rootNavigatorKey,
     routes: [
       fadeTransitionRoute(

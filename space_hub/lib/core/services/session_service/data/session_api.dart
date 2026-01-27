@@ -3,8 +3,9 @@ import 'package:space_hub/core/const/typedefs.dart';
 import 'package:space_hub/core/utills.dart';
 
 class SessionApi {
-  SessionApi(this._apiClient);
+  SessionApi(this._apiClient, this._refreshClient);
   final Dio _apiClient;
+  final Dio _refreshClient;
 
   Future<Tokens> authorize() async {
     final response = await _apiClient.post(
@@ -18,10 +19,9 @@ class SessionApi {
   }
 
   Future<Tokens> refreshTokens({required String refreshToken}) async {
-    final response = await _apiClient.post(
-      '/',
+    final response = await _refreshClient.post(
+      'auth/refresh-token',
       data: {'refreshToken': refreshToken},
-      options: options(authRequired: true, isRefreshRequest: true),
     );
     return (
       accessToken: response.data['data']['accessToken'] as String,
@@ -30,8 +30,8 @@ class SessionApi {
   }
 
   Future<void> logOut() =>
-      _apiClient.delete('/', options: options(authRequired: true));
+      _apiClient.delete('auth/session', options: options(authRequired: true));
 
   Future<void> deleteUser() =>
-      _apiClient.delete('/', options: options(authRequired: true));
+      _apiClient.delete('auth/account', options: options(authRequired: true));
 }

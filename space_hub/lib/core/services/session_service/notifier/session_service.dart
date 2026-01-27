@@ -5,8 +5,8 @@ import 'package:space_hub/core/exceptions.dart';
 import 'package:space_hub/core/services/session_service/domain/session_repository.dart';
 import 'package:space_hub/core/services/session_service/notifier/session_state.dart';
 
-class SessionNotifier extends ChangeNotifier {
-  SessionNotifier(this._sessionRepository);
+class SessionService extends ChangeNotifier {
+  SessionService(this._sessionRepository);
 
   final SessionRepository _sessionRepository;
 

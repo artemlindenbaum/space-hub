@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:space_hub/core/interceptors/token_interceptor.dart';
 
 // DioException это библиотечная сетевая обертка, которая содержит в себе контекст и объект ошибки
 // AppException это ошибка переведенная на доменный язык приложения
@@ -70,7 +69,7 @@ AppException mapDioToAppException(DioException e) {
       if (code == 400) {
         return AppBadRequestException(e.message);
       }
-      if (code == 401 || e.error is BadTokens) {
+      if (code == 401) {
         return AppUnauthorizedException(e.message);
       }
       if (code == 403) {
@@ -96,9 +95,6 @@ AppException mapDioToAppException(DioException e) {
     case DioExceptionType.cancel:
       return AppRequestCancelledException(e.message);
     case DioExceptionType.unknown:
-      if (e.error is NoTokens) {
-        return AppUnauthorizedException(e.message);
-      }
       return AppUnknownException(e.message);
   }
 }

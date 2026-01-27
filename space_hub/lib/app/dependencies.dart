@@ -4,14 +4,22 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:space_hub/core/config.dart';
 import 'package:space_hub/core/const/storage_keys.dart';
-import 'package:space_hub/core/interceptors/token_interceptor.dart';
+import 'package:space_hub/core/network/refresh_interceptor.dart';
+import 'package:space_hub/core/network/session_interceptor.dart';
 import 'package:space_hub/core/services/session_service/data/session_api.dart';
 import 'package:space_hub/core/services/session_service/domain/session_repository.dart';
 import 'package:space_hub/core/services/session_service/notifier/session_service.dart';
 import 'package:space_hub/core/services/token_service.dart';
 
 class Dependencies {
-  Dependencies();
+  Dependencies({
+    required this.sharedPreferences,
+    required this.secureStorage,
+    required this.apiClient,
+    required this.refreshClient,
+    required this.tokenService,
+    required this.sessionService,
+  });
 
   /// The state from the closest instance of this class.
   factory Dependencies.of(BuildContext context) =>
@@ -21,16 +29,17 @@ class Dependencies {
   Widget inject({required Widget child, Key? key}) =>
       InheritedDependencies(dependencies: this, key: key, child: child);
 
-  // Shared preferences
-  late final SharedPreferences sharedPreferences;
+  final SharedPreferences sharedPreferences;
 
-  late final FlutterSecureStorage secureStorage;
+  final FlutterSecureStorage secureStorage;
 
-  late final Dio apiClient;
+  final Dio apiClient;
 
-  late final TokenService tokenService;
+  final Dio refreshClient;
 
-  late final SessionNotifier sessionService;
+  final TokenService tokenService;
+
+  final SessionService sessionService;
 
   @override
   String toString() => 'Dependencies{}';
@@ -43,7 +52,14 @@ class Dependencies {
 /// Fake Dependencies
 @visibleForTesting
 class FakeDependencies extends Dependencies {
-  FakeDependencies();
+  FakeDependencies({
+    required super.sharedPreferences,
+    required super.secureStorage,
+    required super.apiClient,
+    required super.refreshClient,
+    required super.tokenService,
+    required super.sessionService,
+  });
 
   @override
   dynamic noSuchMethod(Invocation invocation) {
@@ -97,52 +113,109 @@ Future<Dependencies> _initializeDependencies(
   }
 
   onProgress?.call('1', 'Initializing dependencies...');
-  final dependencies = Dependencies();
 
   onProgress?.call('2', 'Loading storage preferences...');
-  dependencies.sharedPreferences = await SharedPreferences.getInstance();
-  dependencies.secureStorage = const FlutterSecureStorage();
-  // await dependencies.sharedPreferences.clear();
-  // await dependencies.secureStorage.deleteAll();
+  final sharedPreferences = await SharedPreferences.getInstance();
+  const secureStorage = FlutterSecureStorage();
+  // await sharedPreferences.clear();
+  // await secureStorage.deleteAll();
 
   onProgress?.call('3', 'Setting up API client...');
-  dependencies.apiClient = Dio(BaseOptions(baseUrl: Config.baseUrl));
+  final apiClient = Dio(BaseOptions(baseUrl: Config.baseUrl));
+  final refreshClient = Dio(BaseOptions(baseUrl: Config.baseUrl));
 
   onProgress?.call('5', 'Setting up TokenService...');
-  final sessionMode =
-      dependencies.sharedPreferences.getBool(StorageKeys.rememberMe) == true
+  final sessionMode = sharedPreferences.getBool(StorageKeys.rememberMe) == true
       ? SessionMode.persistent
       : SessionMode.temporary;
 
-  dependencies.tokenService = TokenService(
-    dependencies.secureStorage,
-    sessionMode,
-  );
-  await dependencies.tokenService.init();
+  final tokenService = TokenService(secureStorage, sessionMode);
+  await tokenService.init();
 
-  onProgress?.call('6', 'Setting up SessionNotifier...');
+  onProgress?.call('8', 'Setting up SessionService...');
 
-  dependencies.sessionService = SessionNotifier(
+  final sessionService = SessionService(
     SessionRepository(
-      SessionApi(dependencies.apiClient),
-      dependencies.tokenService,
+     SessionApi(apiClient, refreshClient),
+      tokenService,
     ),
   );
 
-  onProgress?.call('7', 'adding interceptors...');
-  dependencies.apiClient.interceptors.addAll([
-    TokenInterceptor(
-      dependencies.tokenService,
-      dependencies.sessionService,
-      dependencies.apiClient,
-    ),
+  onProgress?.call('9', 'adding interceptors...');
+  // final adapter = apiClient.httpClientAdapter;
+
+  // apiClient.httpClientAdapter = createFailingAdapter(adapter, {
+  //   'GET auth/me': (o) => _unauthorized(o),
+  // });
+
+  // refreshClient.httpClientAdapter = createFailingAdapter(adapter, {
+  //   'POST auth/refresh-token': (o) => _unauthorized(o),
+  // });
+
+  apiClient.interceptors.addAll([
+    SessionInterceptor(tokenService, sessionService, apiClient),
   ]);
 
-  onProgress?.call('8', 'initializing session...');
+  refreshClient.interceptors.addAll([
+    RefreshInterceptor(tokenService.accessToken),
+  ]);
 
-  await dependencies.sessionService.initializeSession();
+  onProgress?.call('10', 'initializing session...');
+  await sessionService.initializeSession();
 
-  onProgress?.call('9', 'dependencies initialized');
+  onProgress?.call('11', 'dependencies initialized');
+
+  final dependencies = Dependencies(
+    sharedPreferences: sharedPreferences,
+    secureStorage: secureStorage,
+    apiClient: apiClient,
+    refreshClient: refreshClient,
+    tokenService: tokenService,
+    sessionService: sessionService,
+  );
 
   return dependencies;
 }
+
+// --------- Примеры DioException для тестов ---------
+// ignore: unused_element
+DioException _badRequest(RequestOptions options) => DioException(
+  requestOptions: options,
+  type: DioExceptionType.badResponse,
+  response: Response(requestOptions: options, statusCode: 400),
+);
+
+// ignore: unused_element
+DioException _unauthorized(RequestOptions options) => DioException(
+  requestOptions: options,
+  type: DioExceptionType.badResponse,
+  response: Response(requestOptions: options, statusCode: 401),
+);
+
+// ignore: unused_element
+DioException _forbidden(RequestOptions options) => DioException(
+  requestOptions: options,
+  type: DioExceptionType.badResponse,
+  response: Response(requestOptions: options, statusCode: 403),
+);
+
+// ignore: unused_element
+DioException _notFound(RequestOptions options) => DioException(
+  requestOptions: options,
+  type: DioExceptionType.badResponse,
+  response: Response(requestOptions: options, statusCode: 404),
+);
+
+// ignore: unused_element
+DioException _conflictError(RequestOptions options) => DioException(
+  requestOptions: options,
+  type: DioExceptionType.badResponse,
+  response: Response(requestOptions: options, statusCode: 409),
+);
+
+// ignore: unused_element
+DioException _unprocessableEntityError(RequestOptions options) => DioException(
+  requestOptions: options,
+  type: DioExceptionType.badResponse,
+  response: Response(requestOptions: options, statusCode: 422),
+);
